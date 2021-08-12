@@ -153,5 +153,5 @@ Session.vim
 tags
 # Persistent undo
 [._]*.un~
-
+build/
 # End of https://www.gitignore.io/api/vim,c++,cmake,clion

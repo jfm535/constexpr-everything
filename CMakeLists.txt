@@ -1,6 +1,23 @@
 cmake_minimum_required(VERSION 3.8)
-project(constexpr-everything CXX)
+macro(set_from_environment VARIABLE)
+  if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
+    set(${VARIABLE} $ENV{${VARIABLE}})
+  endif ()
+endmacro()
+set_from_environment(VCPKG_ROOT)
+if (DEFINED VCPKG_ROOT)
+  set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+  set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+else ()
+  message(
+          WARNING
+          "Variable VCPKG_ROOT is not set. Continuing without vcpkg."
+  )
+endif ()
 
+project(constexpr-everything CXX)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} D:/Modding/CustomLLVM/lib/cmake/llvm)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} D:/Modding/CustomLLVM/lib/cmake/clang)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -41,10 +58,6 @@ find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
-if((${LLVM_PACKAGE_VERSION} VERSION_LESS "9.0.0")
-   OR (${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "12"))
-  message(FATAL_ERROR "Only LLVM 9, 10, and 11 are supported.")
-endif()
 
 # The clang package doesn't appear to provide a version
 find_package(Clang REQUIRED CONFIG)

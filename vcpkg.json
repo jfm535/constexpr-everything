@@ -1,0 +1,12 @@
+{
+  "name": "add-custom-console-commands",
+  "version-string": "1.0.0",
+  "description": "Add Custom Console Commands To Skyrim",
+  "homepage": "https://github.com/jfm535/AddCustomConsoleCommands",
+  "license": "MIT",
+  "dependencies": [
+    "zlib",
+    "libxml2",
+    "z3"
+  ]
+}

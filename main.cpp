@@ -247,7 +247,7 @@ public:
 
     // Mark function as constexpr, the next ast visitor will use this
     // information to find constexpr vardecls
-    func->setConstexprKind(CSK_constexpr);
+    func->setConstexprKind(clang::ConstexprSpecKind::Constexpr);
 
     // Create diagnostic
     const auto FixIt = clang::FixItHint::CreateInsertion(loc, "constexpr ");
@@ -306,7 +306,7 @@ class ConstexprVarDeclFunctionASTVisitor
         return true;
 
       // Is init an integral constant expression
-      if (!var->checkInitIsICE())
+      if (!var->hasICEInitializer(CI_.getASTContext()))
         return true;
 
       // Does the init function use dependent values
@@ -318,8 +318,8 @@ class ConstexprVarDeclFunctionASTVisitor
         return true;
 
       // Is init an ice
-      if (!var->isInitICE())
-        return true;
+      //if (!var->isInitICE())
+      //  return true;
 
       // Create Diagnostic/FixIt
       const auto FixIt = clang::FixItHint::CreateInsertion(loc, "constexpr ");
@@ -410,9 +410,10 @@ public:
 };
 
 int main(int argc, const char **argv) {
-  CommonOptionsParser OptionsParser(argc, argv, ConstexprCategory);
 
-  ClangTool Tool(OptionsParser.getCompilations(),
-                 OptionsParser.getSourcePathList());
+    auto OptionsParser = CommonOptionsParser::create(argc,argv,ConstexprCategory);
+
+  ClangTool Tool(OptionsParser->getCompilations(),
+                 OptionsParser->getSourcePathList());
   Tool.run(newFrontendActionFactory<FunctionDeclFrontendAction>().get());
 }
